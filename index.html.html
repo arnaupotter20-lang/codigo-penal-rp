@@ -1,0 +1,340 @@
+codigo_penal_rp.html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Código Penal RP</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .sub {
+      color: #94a3b8;
+      margin-bottom: 18px;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      font-size: 17px;
+      outline: none;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+    }
+    button.sec {
+      background: #475569;
+    }
+    .result {
+      margin-top: 18px;
+    }
+    .article-title {
+      font-size: 22px;
+      margin: 0 0 12px;
+      color: #f8fafc;
+    }
+    .field {
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+    .label {
+      color: #93c5fd;
+      font-weight: 700;
+    }
+    .muted {
+      color: #94a3b8;
+    }
+    .list-item {
+      padding: 14px;
+      border-radius: 12px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      margin-bottom: 10px;
+    }
+    .small {
+      font-size: 14px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Código Penal RP</h1>
+      <div class="sub">Busca por número de artículo o por texto. Ejemplos: <b>1.17</b>, <b>alcohol</b>, <b>robo</b>.</div>
+
+      <input id="busqueda" type="text" placeholder="Introduce artículo o texto" />
+
+      <div class="actions">
+        <button onclick="buscarArticulo()">Buscar</button>
+        <button class="sec" onclick="limpiarBusqueda()">Limpiar</button>
+      </div>
+
+      <div id="resultado" class="result"></div>
+    </div>
+  </div>
+
+  <script>
+    const articulos = {
+      "1.1": { texto: "Conducción Temeraria", multa: "600 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.2": { texto: "Exceso de velocidad en zonas urbanas (Ciudad)", multa: "400 €", carcel: "1 mes", puntos: "2", observaciones: "—" },
+      "1.3": { texto: "Exceso de velocidad en zonas rurales (Springfield)", multa: "200 €", carcel: "1 mes", puntos: "3", observaciones: "—" },
+      "1.4": { texto: "Exceso de velocidad en autovías (Tres Carriles)", multa: "600 €", carcel: "—", puntos: "4", observaciones: "—" },
+      "1.5": { texto: "Exceso de velocidad en autopistas", multa: "700 €", carcel: "—", puntos: "5", observaciones: "—" },
+      "1.6": { texto: "Ignorar las señales de tráfico (Stop, semáforo, ceda)", multa: "400 €", carcel: "—", puntos: "1", observaciones: "—" },
+      "1.7": { texto: "Realizar un giro indebido", multa: "150 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.8": { texto: "Uso indebido del claxon", multa: "100 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.9": { texto: "Conducir sin el cinturón de seguridad", multa: "100 €", carcel: "—", puntos: "2", observaciones: "—" },
+      "1.10": { texto: "Conducir por zonas no señalizadas (aceras, campo…)", multa: "150 €", carcel: "—", puntos: "—", observaciones: "Retirada del carnet de conducir" },
+      "1.11": { texto: "Estacionar en un lugar no señalizado", multa: "200 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.12": { texto: "Circular en sentido contrario", multa: "300 €", carcel: "—", puntos: "2", observaciones: "—" },
+      "1.13": { texto: "Conducir sin utilizar los intermitentes", multa: "150 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.14": { texto: "Circular marcha atrás", multa: "200 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.15": { texto: "No llevar las luces encendidas por la noche", multa: "100 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.16": { texto: "Conducir con el coche en mal estado", multa: "300 €", carcel: "—", puntos: "—", observaciones: "Retirada/inmovilización del vehículo" },
+      "1.17": { texto: "Evadir un control de alcoholemia/tráfico", multa: "1.000 €", carcel: "8 meses", puntos: "3", observaciones: "—" },
+      "1.18": { texto: "No colaborar en un control de alcoholemia/tráfico", multa: "500 €", carcel: "2 meses", puntos: "—", observaciones: "—" },
+      "1.19": { texto: "Conducir bajo los efectos del alcohol", multa: "500 €", carcel: "—", puntos: "—", observaciones: "Retirada del vehículo" },
+      "1.20": { texto: "Exceder la tasa de alcohol permitida en un control (0.3 g/l)", multa: "300 €", carcel: "4 meses", puntos: "6", observaciones: "—" },
+      "1.21": { texto: "No ceder el paso a vehículos de emergencia", multa: "400 €", carcel: "—", puntos: "5", observaciones: "—" },
+      "1.22": { texto: "Obstaculizar la salida de vehículos de emergencia", multa: "300 €", carcel: "—", puntos: "4", observaciones: "—" },
+      "1.23": { texto: "Conducir un coche modificado", multa: "300 €", carcel: "—", puntos: "—", observaciones: "Incautación del vehículo" },
+      "1.24": { texto: "Provocar un accidente sin heridos", multa: "400 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.25": { texto: "Provocar un accidente con heridos", multa: "1.000 €", carcel: "1 año", puntos: "—", observaciones: "Por cada herido se suma la cuantía" },
+      "1.26": { texto: "Circular sin el permiso de conducir", multa: "800 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.27": { texto: "Conducción sin tener el seguro activo", multa: "1.750 €", carcel: "—", puntos: "—", observaciones: "Retirada del vehículo y pérdida del derecho a la conducción" },
+      "1.28": { texto: "Conducción bajo las influencias de algún tipo de estupefaciente", multa: "1.500 €", carcel: "3 meses", puntos: "—", observaciones: "Retirada del vehículo y retirada del carnet" },
+      "1.29": { texto: "Conducción bajo las influencias de alcohol", multa: "1.250 €", carcel: "3 meses", puntos: "8", observaciones: "Retirada del vehículo" },
+      "1.30": { texto: "Circular con el permiso de conducir caducado", multa: "300 €", carcel: "—", puntos: "2", observaciones: "—" },
+      "1.31": { texto: "Circular sin el permiso de conducir encima", multa: "150 €", carcel: "—", puntos: "3", observaciones: "—" },
+      "1.32": { texto: "Participar en una carrera ilegal", multa: "600 €", carcel: "6 meses", puntos: "Pérdida completa", observaciones: "Pérdida completa del carnet de conducir" },
+      "1.33": { texto: "Provocar una carrera ilegal", multa: "1.000 €", carcel: "3 meses", puntos: "Pérdida completa", observaciones: "Pérdida completa del carnet de conducir" },
+      "1.34": { texto: "Alterar el taxímetro", multa: "500 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "1.35": { texto: "Iniciar una persecución policial", multa: "2.500 €", carcel: "1 año", puntos: "Pérdida completa", observaciones: "Pérdida completa del carnet de conducir" },
+      "1.36": { texto: "Llevar una matrícula falsa o no homologada", multa: "3.000 €", carcel: "—", puntos: "6", observaciones: "Incautación del vehículo" },
+      "1.37": { texto: "Utilizar el teléfono móvil durante la conducción", multa: "200 €", carcel: "—", puntos: "3", observaciones: "—" },
+
+      "2.1": { texto: "No poseer DNI", multa: "450 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.2": { texto: "No llevar el DNI encima", multa: "450 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.3": { texto: "Disturbios en la vía pública", multa: "400 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.4": { texto: "Alteración del orden público", multa: "100 €", carcel: "1 mes", puntos: "—", observaciones: "—" },
+      "2.5": { texto: "Ir enmascarado por la vía pública", multa: "50 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.6": { texto: "Negarse a identificarse", multa: "150 €", carcel: "1 mes", puntos: "—", observaciones: "—" },
+      "2.7": { texto: "Amenazas a un civil", multa: "50 €", carcel: "1 mes", puntos: "—", observaciones: "—" },
+      "2.8": { texto: "Insultos a un civil", multa: "50 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.9": { texto: "Vandalismo", multa: "150 €", carcel: "4 meses", puntos: "—", observaciones: "—" },
+      "2.10": { texto: "Agresión a un civil", multa: "1.000 €", carcel: "5 meses", puntos: "—", observaciones: "—" },
+      "2.11": { texto: "Intento de secuestro a un civil", multa: "2.500 €", carcel: "4 años", puntos: "—", observaciones: "—" },
+      "2.12": { texto: "Secuestro de un civil", multa: "4.500 €", carcel: "8 años", puntos: "—", observaciones: "—" },
+      "2.13": { texto: "Intento de violación", multa: "7.500 €", carcel: "10 años", puntos: "—", observaciones: "—" },
+      "2.14": { texto: "Violación", multa: "12.000 €", carcel: "20 años", puntos: "—", observaciones: "—" },
+      "2.15": { texto: "Intento de homicidio a un civil", multa: "5.000 €", carcel: "7 años", puntos: "—", observaciones: "—" },
+      "2.16": { texto: "Homicidio a un civil", multa: "10.000 €", carcel: "15 años", puntos: "—", observaciones: "—" },
+      "2.17": { texto: "Ir indocumentado por la vía pública", multa: "300 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.18": { texto: "Falsificar documentos gubernamentales", multa: "1.500 €", carcel: "3 años", puntos: "—", observaciones: "—" },
+      "2.19": { texto: "Acampada ilegal", multa: "200 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.20": { texto: "Suplantación de identidad", multa: "2.000 €", carcel: "1 año", puntos: "—", observaciones: "—" },
+      "2.21": { texto: "Orinar en la vía pública", multa: "200 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.22": { texto: "Circular en vía pública desnudo o semidesnudo", multa: "500 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.23": { texto: "Circular en vía pública sin camiseta", multa: "100 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.24": { texto: "Acoso sexual", multa: "3.000 €", carcel: "2 años", puntos: "—", observaciones: "—" },
+      "2.25": { texto: "Convocar una manifestación ilegal y desordenada", multa: "5.000 € - 15.000 €", carcel: "—", puntos: "—", observaciones: "Variable según el descontrol de la concentración" },
+      "2.26": { texto: "Acoso o intimidación", multa: "1.300 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.27": { texto: "Incitación al odio o la violencia", multa: "2.000 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.28": { texto: "Insultos sobre la orientación sexual", multa: "1.800 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "2.29": { texto: "Insultos sobre etnia, género, color de piel o religión", multa: "2.500 €", carcel: "—", puntos: "—", observaciones: "Indemnización a la víctima" },
+      "2.30": { texto: "Violencia de género", multa: "3.500 €", carcel: "2 años", puntos: "—", observaciones: "—" },
+      "2.31": { texto: "Delito de Estafa", multa: "3.000 €", carcel: "—", puntos: "—", observaciones: "Devolver la cantidad estafada" },
+      "2.32": { texto: "Pertenencia a una organización ilegal", multa: "50.000 €", carcel: "30 años", puntos: "—", observaciones: "—" },
+      "2.33": { texto: "Amenaza con un arma de fuego a un civil", multa: "1.000 €", carcel: "1 mes", puntos: "—", observaciones: "—" },
+      "2.34": { texto: "Amenaza con un arma blanca a un civil", multa: "500 €", carcel: "2 meses", puntos: "—", observaciones: "—" },
+      "2.35": { texto: "Atentado contra la ciudadanía", multa: "—", carcel: "Prisión permanente revisable", puntos: "—", observaciones: "—" },
+      "2.36": { texto: "Calumnias contra un civil", multa: "150 €", carcel: "1 semana", puntos: "—", observaciones: "—" },
+      "2.37": { texto: "Falacias contra un civil", multa: "150 €", carcel: "1 semana", puntos: "—", observaciones: "—" },
+      "2.38": { texto: "Intento de agresión sexual", multa: "7.000 €", carcel: "10 años", puntos: "—", observaciones: "—" },
+      "2.39": { texto: "Agresión sexual", multa: "14.000 €", carcel: "25 años", puntos: "—", observaciones: "—" },
+
+      "3.40": { texto: "Intento de agresión a un menor de edad", multa: "1.500 €", carcel: "72 horas", puntos: "—", observaciones: "Indemnización y retención de 72 horas" },
+      "3.41": { texto: "Agresión a un menor de edad", multa: "3.500 €", carcel: "2 años", puntos: "—", observaciones: "—" },
+      "3.42": { texto: "Intento de violación a un menor de edad", multa: "15.000 €", carcel: "3 años", puntos: "—", observaciones: "—" },
+      "3.43": { texto: "Violación a un menor de edad", multa: "50.000 €", carcel: "3 años", puntos: "—", observaciones: "El texto original dice 'de 3 años de cárcel'; puede ser ambiguo" },
+      "3.44": { texto: "Prostitución en vía pública", multa: "3.500 €", carcel: "1 año", puntos: "—", observaciones: "—" },
+      "3.45": { texto: "Prostitución en locales no diseñados para dicha actividad", multa: "8.000 €", carcel: "2 años", puntos: "—", observaciones: "Cierre del local" },
+      "3.46": { texto: "Allanamiento de zona acordonada por los FCSE", multa: "500 €", carcel: "1 mes", puntos: "—", observaciones: "—" },
+      "3.47": { texto: "Realizar una denuncia falsa", multa: "300 €", carcel: "4 meses", puntos: "—", observaciones: "—" },
+      "3.48": { texto: "Ocasionar daños a mobiliario urbano", multa: "600 €", carcel: "—", puntos: "—", observaciones: "Indemnización de los daños" },
+      "3.49": { texto: "Cómplice de fuga", multa: "1.200 €", carcel: "2 meses", puntos: "—", observaciones: "—" },
+
+      "3.1": { texto: "Robo con intimidación", multa: "1.500 €", carcel: "3 años", puntos: "—", observaciones: "—" },
+      "3.2": { texto: "Robo con violencia", multa: "2.500 €", carcel: "5 años", puntos: "—", observaciones: "—" },
+      "3.3": { texto: "Robo con arma blanca", multa: "4.500 €", carcel: "5 años", puntos: "—", observaciones: "—" },
+      "3.4": { texto: "Robo con un arma de fuego", multa: "6.500 €", carcel: "7 años", puntos: "—", observaciones: "—" },
+      "3.5": { texto: "Robo a Gasolinera", multa: "5.500 €", carcel: "2 años", puntos: "—", observaciones: "—" },
+      "3.6": { texto: "Robo a Tool Store / Armería", multa: "8.500 €", carcel: "3 años", puntos: "—", observaciones: "—" },
+      "3.7": { texto: "Robo a Joyería", multa: "10.500 €", carcel: "5 años", puntos: "—", observaciones: "—" },
+      "3.8": { texto: "Allanamiento a una propiedad", multa: "3.000 €", carcel: "5 años", puntos: "—", observaciones: "—" },
+      "3.9": { texto: "Ocupación de una propiedad", multa: "5.000 €", carcel: "8 años", puntos: "—", observaciones: "—" },
+      "3.10": { texto: "Robo de vehículo", multa: "4.500 €", carcel: "2 años", puntos: "—", observaciones: "—" },
+      "3.11": { texto: "Robo de material explosivo, radiactivo", multa: "3.500 €", carcel: "6 años", puntos: "—", observaciones: "—" },
+      "3.12": { texto: "Ser cómplice en un robo", multa: "2.000 €", carcel: "1 año", puntos: "—", observaciones: "—" },
+      "3.13": { texto: "Impago de multas", multa: "1.000 € por cada multa impagada", carcel: "2 meses", puntos: "—", observaciones: "—" },
+
+      "4.1": { texto: "Venta ilegal de armas blancas", multa: "300 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "4.2": { texto: "Venta ilegal de armas de bajo calibre", multa: "1.500 €", carcel: "6 años", puntos: "—", observaciones: "—" },
+      "4.3": { texto: "Venta ilegal de armas de alto calibre", multa: "3.500 €", carcel: "10 años", puntos: "—", observaciones: "—" },
+      "4.4": { texto: "Mal uso de un arma blanca", multa: "1.000 €", carcel: "1 año", puntos: "—", observaciones: "—" },
+      "4.5": { texto: "Mal empleo de un arma de fuego", multa: "2.000 €", carcel: "2 años", puntos: "—", observaciones: "—" },
+      "4.6": { texto: "Mostrar un arma de fuego en público", multa: "—", carcel: "—", puntos: "—", observaciones: "El texto original no especifica sanción" },
+      "4.7": { texto: "No tener licencia de armas", multa: "1.500 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "4.8": { texto: "Posesión ilegal de armas", multa: "3.000 €", carcel: "4 años", puntos: "—", observaciones: "—" },
+      "4.9": { texto: "Tráfico de armas", multa: "4.500 €", carcel: "15 años", puntos: "—", observaciones: "—" },
+      "4.10": { texto: "Posesión de sustancias alucinógenas", multa: "Variable", carcel: "Variable", puntos: "—", observaciones: "1 gr: 10.000 € | 5 gr: 20.000 € | 5 kg: 5 años de cárcel + multa del tanto al triple según valor de mercado" },
+      "4.11": { texto: "Tráfico de sustancias alucinógenas", multa: "5.000 €", carcel: "6 años", puntos: "—", observaciones: "—" },
+      "4.12": { texto: "Posesión de sustancias alucinógenas", multa: "3.000 €", carcel: "3 años", puntos: "—", observaciones: "—" },
+      "4.13": { texto: "Venta ilegal de sustancias alucinógenas", multa: "5.000 €", carcel: "6 años", puntos: "—", observaciones: "—" },
+      "4.14": { texto: "Tenencia con fines de distribución", multa: "7.500 €", carcel: "4 años", puntos: "—", observaciones: "—" },
+      "4.19": { texto: "Fabricación de sustancias alucinógenas", multa: "25.000 €", carcel: "8 años", puntos: "—", observaciones: "—" },
+      "4.20": { texto: "Pertenencia a banda ilegal", multa: "—", carcel: "15 años", puntos: "—", observaciones: "—" },
+      "4.21": { texto: "Colaboración con banda ilegal", multa: "—", carcel: "5 años", puntos: "—", observaciones: "—" },
+      "4.22": { texto: "Reclutamiento para banda ilegal", multa: "—", carcel: "6 años", puntos: "—", observaciones: "—" },
+      "4.23": { texto: "Organización o liderazgo de banda ilegal", multa: "—", carcel: "10 años", puntos: "—", observaciones: "—" },
+      "4.24": { texto: "Financiamiento de banda ilegal", multa: "4.500 €", carcel: "7 años", puntos: "—", observaciones: "—" },
+
+      "5.1": { texto: "Faltas de respeto a un funcionario público", multa: "1.000 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "5.2": { texto: "Desacato", multa: "2.000 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "5.3": { texto: "Vacilar a un funcionario público", multa: "1.500 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "5.4": { texto: "Resistirse a un arresto", multa: "2.500 €", carcel: "2 años", puntos: "—", observaciones: "—" },
+      "5.5": { texto: "Intento de soborno", multa: "5.000 €", carcel: "6 años", puntos: "—", observaciones: "—" },
+      "5.6": { texto: "Soborno", multa: "8.000 €", carcel: "7 años", puntos: "—", observaciones: "—" },
+      "5.7": { texto: "Atropello a un funcionario", multa: "7.500 €", carcel: "15 meses", puntos: "—", observaciones: "Retirada del vehículo y retirada indefinida de la licencia de conducir" },
+      "5.8": { texto: "Atropello a un funcionario y darse a la fuga", multa: "10.000 €", carcel: "15 meses", puntos: "—", observaciones: "Retirada del vehículo y retirada indefinida de la licencia de conducir" },
+      "5.9": { texto: "Agresión a un funcionario público con arma blanca", multa: "3.000 €", carcel: "5 años", puntos: "—", observaciones: "—" },
+      "5.10": { texto: "Agresión a un funcionario público", multa: "2.600 €", carcel: "3 años", puntos: "—", observaciones: "—" },
+      "5.11": { texto: "Intento de homicidio a un funcionario público", multa: "10.000 €", carcel: "15 años", puntos: "—", observaciones: "—" },
+      "5.12": { texto: "Intento de homicidio a varios funcionarios públicos", multa: "30.000 €", carcel: "20 años", puntos: "—", observaciones: "—" },
+      "5.13": { texto: "Homicidio de un funcionario público", multa: "15.000 €", carcel: "25 años", puntos: "—", observaciones: "—" },
+      "5.14": { texto: "Homicidio de varios funcionarios públicos", multa: "30.000 €", carcel: "Prisión permanente revisable", puntos: "—", observaciones: "—" },
+      "5.15": { texto: "Intento de secuestro a un funcionario público", multa: "3.500 €", carcel: "4 años", puntos: "—", observaciones: "—" },
+      "5.16": { texto: "Secuestro a un funcionario público", multa: "6.500 €", carcel: "8 años", puntos: "—", observaciones: "—" },
+      "5.17": { texto: "Robo de material de emergencias", multa: "1.500 €", carcel: "8 meses", puntos: "—", observaciones: "—" },
+      "5.18": { texto: "Atentado contra la autoridad", multa: "2.500 €", carcel: "2 años", puntos: "—", observaciones: "—" },
+      "5.19": { texto: "Suplantación de identidad a un funcionario público", multa: "3.500 €", carcel: "4 años", puntos: "—", observaciones: "—" },
+      "5.20": { texto: "Aceptar un soborno", multa: "5.000 €", carcel: "8 años", puntos: "—", observaciones: "—" },
+      "5.21": { texto: "Corrupción en un cuerpo del estado", multa: "7.500 €", carcel: "4 años", puntos: "—", observaciones: "—" },
+      "5.22": { texto: "Atentado contra el Estado", multa: "—", carcel: "Prisión permanente revisable", puntos: "—", observaciones: "—" },
+      "5.23": { texto: "Atentado a la autoridad", multa: "10.000 €", carcel: "5 años", puntos: "—", observaciones: "—" },
+      "5.24": { texto: "Intento de rebelión o golpe de Estado fallido", multa: "—", carcel: "Prisión permanente revisable", puntos: "—", observaciones: "—" },
+      "5.25": { texto: "Atentado a la ciudad o atentado a la presidencia con arma de fuego", multa: "—", carcel: "Prisión permanente revisable", puntos: "—", observaciones: "—" },
+      "5.26": { texto: "Fraude electoral", multa: "50.000 €", carcel: "3 años", puntos: "—", observaciones: "—" },
+      "5.27": { texto: "Falso testimonio", multa: "1.000 €", carcel: "—", puntos: "—", observaciones: "—" },
+      "5.28": { texto: "Grabar a un policía de servicio", multa: "2.500 €", carcel: "—", puntos: "—", observaciones: "Siempre y cuando las caras estén censadas y las voces distorsionadas" },
+      "5.29": { texto: "Mal uso del Código Penal", multa: "10.000 €", carcel: "1 mes", puntos: "—", observaciones: "—" },
+      "5.30": { texto: "Arresto sin motivo", multa: "15.000 €", carcel: "1 año", puntos: "—", observaciones: "—" },
+      "5.31": { texto: "Falacias contra un cuerpo del estado", multa: "150 €", carcel: "1 semana", puntos: "—", observaciones: "—" },
+      "5.32": { texto: "Calumnias contra un cuerpo del estado", multa: "150 €", carcel: "1 semana", puntos: "—", observaciones: "—" },
+      "5.33": { texto: "Robo en un edificio estatal", multa: "250.000 €", carcel: "Prisión permanente revisable", puntos: "—", observaciones: "—" },
+      "5.34": { texto: "Robo en un edificio estatal a mano armada", multa: "300.000 €", carcel: "Prisión permanente revisable", puntos: "—", observaciones: "Retirada de licencia de armas, retirada del arma y devolver lo robado" }
+    };
+
+    function renderArticulo(numero, datos) {
+      return `
+        <div class="card">
+          <h2 class="article-title">Artículo ${numero}</h2>
+          <div class="field"><span class="label">Texto:</span> ${datos.texto}</div>
+          <div class="field"><span class="label">Multa:</span> ${datos.multa}</div>
+          <div class="field"><span class="label">Cárcel:</span> ${datos.carcel}</div>
+          <div class="field"><span class="label">Pérdida de puntos:</span> ${datos.puntos}</div>
+          <div class="field"><span class="label">Observaciones:</span> ${datos.observaciones || "—"}</div>
+        </div>
+      `;
+    }
+
+    function buscarArticulo() {
+      const entrada = document.getElementById("busqueda").value.trim().toLowerCase();
+      const resultado = document.getElementById("resultado");
+
+      if (!entrada) {
+        resultado.innerHTML = '<div class="small">Introduce un artículo o texto para buscar.</div>';
+        return;
+      }
+
+      if (articulos[entrada]) {
+        resultado.innerHTML = renderArticulo(entrada, articulos[entrada]);
+        return;
+      }
+
+      const coincidencias = Object.entries(articulos).filter(([numero, datos]) => {
+        return (
+          numero.toLowerCase().includes(entrada) ||
+          datos.texto.toLowerCase().includes(entrada) ||
+          datos.multa.toLowerCase().includes(entrada) ||
+          datos.carcel.toLowerCase().includes(entrada) ||
+          datos.puntos.toLowerCase().includes(entrada) ||
+          (datos.observaciones && datos.observaciones.toLowerCase().includes(entrada))
+        );
+      });
+
+      if (coincidencias.length === 0) {
+        resultado.innerHTML = '<div class="card">No se ha encontrado ningún artículo.</div>';
+        return;
+      }
+
+      resultado.innerHTML = `
+        <div class="small" style="margin-bottom:10px;">Resultados encontrados: ${coincidencias.length}</div>
+        ${coincidencias.map(([numero, datos]) => `
+          <div class="list-item">
+            <div><b>Artículo ${numero}</b> — ${datos.texto}</div>
+            <div class="small">Multa: ${datos.multa} | Cárcel: ${datos.carcel} | Puntos: ${datos.puntos}</div>
+          </div>
+        `).join("")}
+      `;
+    }
+
+    function limpiarBusqueda() {
+      document.getElementById("busqueda").value = "";
+      document.getElementById("resultado").innerHTML = "";
+    }
+
+    document.getElementById("busqueda").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") buscarArticulo();
+    });
+  </script>
+</body>
+</html>
